@@ -246,5 +246,21 @@ public class Job {
 
 	public enum Trigger {
 		ADD, PUSH, PULLREQUEST, MANUAL, DELETE, PRMERGED, PRAUTOMERGED, PRDECLINED, NULL;
+		private String trigger;
+
+		/**
+		 * @return the season
+		 */
+		public String getTrigger() {
+			return trigger;
+		}
+
+		/**
+		 * @param trigger the season to set
+		 */
+		public void setTriger(String trigger) {
+			this.trigger = trigger;
+		}
+
 	}
 }

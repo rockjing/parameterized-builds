@@ -31,6 +31,12 @@ public class BitbucketVariables {
 			return this;
 		}
 
+		public Builder toBranch(String toBranch) {
+			Preconditions.checkNotNull(toBranch);
+			variables.add(new SimpleEntry<>("$TOBRANCH", toBranch));
+			return this;
+		}
+
 		public Builder commit(String commit) {
 			Preconditions.checkNotNull(commit);
 			variables.add(new SimpleEntry<>("$COMMIT", commit));
@@ -69,6 +75,12 @@ public class BitbucketVariables {
 		    Preconditions.checkNotNull(prAuthor);
 		    variables.add(new SimpleEntry<>("$PRAUTHOR", prAuthor));
 		    return this;
+		}
+
+		public Builder prAuthorEmail(String prAuthorEmail) {
+			Preconditions.checkNotNull(prAuthorEmail);
+			variables.add(new SimpleEntry<>("$PRAUTHOREMAIL", prAuthorEmail));
+			return this;
 		}
 
 		public Builder prTitle(String prTitle) {
