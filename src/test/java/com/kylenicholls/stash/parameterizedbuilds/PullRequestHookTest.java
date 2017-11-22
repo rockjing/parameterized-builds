@@ -48,6 +48,7 @@ public class PullRequestHookTest {
 	private final String REPO_SLUG = "reposlug";
 	private final String PROJECT_NAME = "projectname";
 	private final String USER_DISPLAY_NAME = "userdisplayname";
+	private final String USER_EMAIL = "useremail";
 	private final String PR_TITLE = "prtitle";
 	private final Long PR_ID = 15L;
 	private final String PR_URI = "http://pruri";
@@ -118,6 +119,7 @@ public class PullRequestHookTest {
 		when(pullRequest.getId()).thenReturn(PR_ID);
 		when(author.getUser()).thenReturn(user);
 		when(user.getDisplayName()).thenReturn(USER_DISPLAY_NAME);
+		when(user.getEmailAddress()).thenReturn(USER_EMAIL);
 		when(prFromRef.getRepository()).thenReturn(repository);
 		when(prFromRef.getDisplayId()).thenReturn(SOURCE_BRANCH);
 		when(prFromRef.getLatestCommit()).thenReturn(COMMIT);

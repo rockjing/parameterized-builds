@@ -116,7 +116,6 @@ public class PullRequestHook {
 		ApplicationUser user = pullRequest.getAuthor().getUser();
 		String projectKey = repository.getProject().getKey();
 		String branch = pullRequest.getFromRef().getDisplayId();
-		String toBranch = pullRequest.getToRef().getDisplayId(); //add by Rock
 		String commit = pullRequest.getFromRef().getLatestCommit();
 		String url = applicationPropertiesService.getBaseUrl().toString();
 		long prId = pullRequest.getId();
@@ -131,7 +130,6 @@ public class PullRequestHook {
 				.prDestination(prDest).prUrl(prUrl)
 				.repoName(repository.getSlug())
 				.projectName(projectKey)
-                .toBranch(toBranch) //add by Rock
                 .prAuthorEmail(prAuthorEmail); //add by Rock
 
 		if (prDescription != null) {

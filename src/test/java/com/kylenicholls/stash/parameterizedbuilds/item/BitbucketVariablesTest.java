@@ -66,6 +66,17 @@ public class BitbucketVariablesTest {
 	}
 
 	@Test
+	public void testAddprAuthorEmail() {
+		String AuthorEmail = "AuthorEmail";
+		BitbucketVariables actual = new BitbucketVariables.Builder().prAuthorEmail(AuthorEmail).build();
+
+		List<Entry<String, String>> expected = new ArrayList<>();
+		expected.add(new SimpleEntry<>("$AUTHOREMAIL", AuthorEmail));
+		assertEquals(1, actual.getVariables().size());
+		assertEquals(expected, actual.getVariables());
+	}
+
+	@Test
 	public void testAddPRTitle() {
 		String prTitle = "prtitle";
 		BitbucketVariables actual = new BitbucketVariables.Builder().prTitle(prTitle).build();
@@ -75,6 +86,8 @@ public class BitbucketVariablesTest {
 		assertEquals(1, actual.getVariables().size());
 		assertEquals(expected, actual.getVariables());
 	}
+
+
 
 	@Test
 	public void testAddPRDescription() {
