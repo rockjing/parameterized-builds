@@ -85,6 +85,7 @@ public class PullRequestHook {
 		PullRequest pullRequest = event.getPullRequest();
 		triggerFromPR(pullRequest, Trigger.PRDECLINED);
 
+
 	}
 
 	private void triggerFromPR(Branch branch, AutomaticMergeEvent event, Trigger trigger){
@@ -93,6 +94,7 @@ public class PullRequestHook {
 			return;
 		}
 		ApplicationUser user = event.getUser();
+
 		String projectKey = repository.getProject().getKey();
 		String commit = branch.getLatestCommit();
 		String branch_name = branch.getDisplayId();
@@ -118,6 +120,7 @@ public class PullRequestHook {
 		String url = applicationPropertiesService.getBaseUrl().toString();
 		long prId = pullRequest.getId();
 		String prAuthor = pullRequest.getAuthor().getUser().getDisplayName();
+        String prAuthorEmail =pullRequest.getAuthor().getUser().getEmailAddress(); //add by Rock
 		String prTitle = pullRequest.getTitle();
 		String prDescription = pullRequest.getDescription();
 		String prDest = pullRequest.getToRef().getDisplayId();
@@ -126,7 +129,9 @@ public class PullRequestHook {
 				.commit(commit).url(url).prId(prId).prAuthor(prAuthor).prTitle(prTitle)
 				.prDestination(prDest).prUrl(prUrl)
 				.repoName(repository.getSlug())
-				.projectName(projectKey);
+				.projectName(projectKey)
+                .prAuthorEmail(prAuthorEmail); //add by Rock
+
 		if (prDescription != null) {
 			builder.prDescription(prDescription);
 		}
@@ -152,7 +157,7 @@ public class PullRequestHook {
 					joinedUserToken = jenkins.getJoinedUserToken(user);
 				}
 
-				String buildUrl = job
+				final String buildUrl = job
 						.buildUrl(jenkinsServer, bitbucketVariables, joinedUserToken != null);
 
 				// use default user and token if the user that triggered the
