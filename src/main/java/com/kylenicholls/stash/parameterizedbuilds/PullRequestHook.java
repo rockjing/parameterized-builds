@@ -121,16 +121,25 @@ public class PullRequestHook {
 		long prId = pullRequest.getId();
 		String prAuthor = pullRequest.getAuthor().getUser().getDisplayName();
         String prAuthorEmail =pullRequest.getAuthor().getUser().getEmailAddress(); //add by Rock
+		StringBuilder ReceiverEmails = new StringBuilder();
+		ReceiverEmails.append(prAuthor);
+		while(pullRequest.getReviewers().iterator().hasNext())
+		{
+			ReceiverEmails.append(", "+pullRequest.getReviewers().iterator().next().getUser().getEmailAddress());
+		}
+
+
 		String prTitle = pullRequest.getTitle();
 		String prDescription = pullRequest.getDescription();
 		String prDest = pullRequest.getToRef().getDisplayId();
 		String prUrl = url + "/projects/" + projectKey + "/repos/" + repository.getSlug() + "/pull-requests/" + prId;
+
 		BitbucketVariables.Builder builder = new BitbucketVariables.Builder().branch(branch)
 				.commit(commit).url(url).prId(prId).prAuthor(prAuthor).prTitle(prTitle)
 				.prDestination(prDest).prUrl(prUrl)
 				.repoName(repository.getSlug())
 				.projectName(projectKey)
-                .prAuthorEmail(prAuthorEmail); //add by Rock
+                .prAuthorEmail(ReceiverEmails.toString()); //add by Rock
 
 		if (prDescription != null) {
 			builder.prDescription(prDescription);
