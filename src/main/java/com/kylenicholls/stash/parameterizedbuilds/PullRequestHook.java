@@ -1,19 +1,14 @@
 package com.kylenicholls.stash.parameterizedbuilds;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.atlassian.bitbucket.branch.automerge.AutomaticMergeEvent;
 import com.atlassian.bitbucket.content.AbstractChangeCallback;
 import com.atlassian.bitbucket.content.Change;
 import com.atlassian.bitbucket.content.ChangeContext;
 import com.atlassian.bitbucket.content.ChangeSummary;
-import com.atlassian.bitbucket.event.pull.PullRequestDeclinedEvent;
-import com.atlassian.bitbucket.event.pull.PullRequestMergedEvent;
-import com.atlassian.bitbucket.event.pull.PullRequestOpenedEvent;
-import com.atlassian.bitbucket.event.pull.PullRequestReopenedEvent;
-import com.atlassian.bitbucket.event.pull.PullRequestRescopedEvent;
+import com.atlassian.bitbucket.event.pull.*;
 import com.atlassian.bitbucket.pull.PullRequest;
 import com.atlassian.bitbucket.pull.PullRequestChangesRequest;
+import com.atlassian.bitbucket.pull.PullRequestParticipant;
 import com.atlassian.bitbucket.pull.PullRequestService;
 import com.atlassian.bitbucket.repository.Branch;
 import com.atlassian.bitbucket.repository.Repository;
@@ -27,9 +22,17 @@ import com.kylenicholls.stash.parameterizedbuilds.item.BitbucketVariables;
 import com.kylenicholls.stash.parameterizedbuilds.item.Job;
 import com.kylenicholls.stash.parameterizedbuilds.item.Job.Trigger;
 import com.kylenicholls.stash.parameterizedbuilds.item.Server;
-import com.atlassian.bitbucket.branch.automerge.AutomaticMergeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+//add log4j
 
 public class PullRequestHook {
+	private static final Logger log = LoggerFactory.getLogger(PullRequestHook.class);
 	private final SettingsService settingsService;
 	private final PullRequestService pullRequestService;
 	private final Jenkins jenkins;
@@ -41,6 +44,7 @@ public class PullRequestHook {
 		this.pullRequestService = pullRequestService;
 		this.jenkins = jenkins;
 		this.applicationPropertiesService = applicationPropertiesService;
+
 	}
 
 	@EventListener
@@ -121,12 +125,20 @@ public class PullRequestHook {
 		long prId = pullRequest.getId();
 		String prAuthor = pullRequest.getAuthor().getUser().getDisplayName();
         String prAuthorEmail =pullRequest.getAuthor().getUser().getEmailAddress(); //add by Rock
-		StringBuilder ReceiverEmails = new StringBuilder();
-		ReceiverEmails.append(prAuthor);
-		while(pullRequest.getReviewers().iterator().hasNext())
-		{
-			ReceiverEmails.append(", "+pullRequest.getReviewers().iterator().next().getUser().getEmailAddress());
+
+
+
+		//add by Rock, if has reviewers
+		Iterator<PullRequestParticipant> reviewers = pullRequest.getReviewers().iterator(); // see http://bbs.csdn.net/topics/391872997 dead cycle issue
+		while (reviewers.hasNext()) {
+			PullRequestParticipant participant = reviewers.next();
+			ApplicationUser reviewer = participant.getUser();
+			if (reviewer != null) {
+				prAuthorEmail = prAuthorEmail + ", " + reviewer.getEmailAddress();
+			}
+
 		}
+		log.info("prAuthorEmail = " +prAuthorEmail);
 
 
 		String prTitle = pullRequest.getTitle();
@@ -139,7 +151,7 @@ public class PullRequestHook {
 				.prDestination(prDest).prUrl(prUrl)
 				.repoName(repository.getSlug())
 				.projectName(projectKey)
-                .prAuthorEmail(ReceiverEmails.toString()); //add by Rock
+                .prAuthorEmail(prAuthorEmail); //add by Rock
 
 		if (prDescription != null) {
 			builder.prDescription(prDescription);
@@ -168,6 +180,8 @@ public class PullRequestHook {
 
 				final String buildUrl = job
 						.buildUrl(jenkinsServer, bitbucketVariables, joinedUserToken != null);
+				log.info("Jenkins get alternative url " + jenkinsServer.getAltUrl());
+				log.info("Jenkins request url  " + buildUrl);
 
 				// use default user and token if the user that triggered the
 				// build does not have a token set
