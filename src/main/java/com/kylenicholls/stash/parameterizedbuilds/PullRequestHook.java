@@ -134,7 +134,7 @@ public class PullRequestHook {
 			PullRequestParticipant participant = reviewers.next();
 			ApplicationUser reviewer = participant.getUser();
 			if (reviewer != null) {
-				prAuthorEmail = prAuthorEmail + ", " + reviewer.getEmailAddress();
+				prAuthorEmail = prAuthorEmail + "," + reviewer.getEmailAddress();
 			}
 
 		}
